@@ -29,7 +29,7 @@ fun <T> createRequest(request: Class<T>): T {
         )
         .addConverterFactory(GsonConverterFactory.create(Gson()))
         .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
-        .baseUrl("https://api.apiopen.top/")
+        .baseUrl("http://www.wanandroid.com/")
         .build().create(request)
 
 }

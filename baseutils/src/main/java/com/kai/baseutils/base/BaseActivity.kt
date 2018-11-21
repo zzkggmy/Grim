@@ -12,7 +12,7 @@ import com.kai.baseutils.utils.findColor
 import com.kai.baseutils.ProgressView
 import com.kai.baseutils.ToolBar
 
-abstract class BaseActivity<T: Presenter> : AppCompatActivity() {
+abstract class BaseActivity : AppCompatActivity() {
     private lateinit var progressView: ProgressView.Builder
     private lateinit var toolBar: ToolBar
     private lateinit var linearLayout: LinearLayout
@@ -128,5 +128,4 @@ abstract class BaseActivity<T: Presenter> : AppCompatActivity() {
     fun setRightFirstVisibility(visibility: Int) = toolBar.setRightFirstVisibility(visibility)
     fun setRightClickable(clickable: Boolean) = toolBar.setRightClickable(clickable)
     fun setRightFirstClickable(clickable: Boolean) = toolBar.setRightFirstClickable(clickable)
-
 }
