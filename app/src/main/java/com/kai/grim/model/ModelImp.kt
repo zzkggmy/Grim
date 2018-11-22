@@ -11,7 +11,7 @@ import rx.Subscriber
 object ModelImp {
     class MainModel : model.MainModel {
         override fun getMainModel(mainArticle: Present.MainList, page: Int) {
-            httpUtils(createRequest(ApiService::class.java).getArticle(), object : Subscriber<ArticleBean>() {
+            httpUtils(createRequest(ApiService::class.java).getArticle(page), object : Subscriber<ArticleBean>() {
                 override fun onNext(t: ArticleBean) {
                     if (t.errorCode == 0) {
                         mainArticle.getMainSuccess(t)

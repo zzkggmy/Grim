@@ -19,29 +19,7 @@ class ArticleAdapter(
 ) : BaseAdapter<ArticleBean.Data.Datas>(datas, R.layout.article_item, app) {
 
     override fun bindData(holder: RecyclerView.ViewHolder, position: Int) {
-//        if (holder is HeaderHolder) {
-//            holder.itemView.banner.apply {
-//                setView(bannerList)
-//                setAutoDisplay(true)
-//                setCyclerDuration(2000)
-//            }
-//            holder.itemView.banner.bindImageLoader(object : Banner.BindImageEngine {
-//                override fun load(url: String, iv: ImageView) {
-//                    Glide.with(app)
-//                        .asBitmap()
-//                        .load(url)
-//                        .apply {
-//                            RequestOptions()
-//                                .centerCrop()
-//                                .placeholder(R.drawable.ic_no_video)
-//                                .error(R.drawable.ic_no_video)
-//                                .priority(Priority.HIGH)
-//                                .diskCacheStrategy(DiskCacheStrategy.NONE)
-//                        }.into(iv)
-//                }
-//            })
-//        } else {
-//            holder.itemView.tv_article_item.text = datas[position].title
-//        }
+            holder.itemView.tv_article_item.text = datas[position].title
     }
+
 }

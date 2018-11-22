@@ -8,6 +8,9 @@ import android.util.SparseArray
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewGroup.LayoutParams.MATCH_PARENT
+import android.view.ViewGroup.LayoutParams.WRAP_CONTENT
+import android.widget.FrameLayout
 import android.widget.LinearLayout
 
 
@@ -18,27 +21,20 @@ abstract class BaseAdapter<T>(var datas: MutableList<T>, private val itemView: I
     private val FOOTER = 2
     private val DEFAULT_NUM = -1
     private lateinit var onItemClickListener: OnItemClickListener
-    private val headLinearLayout = LinearLayout(context)
-    private val footLinearLayout = LinearLayout(context)
-    private val headViews: SparseArray<Int> = SparseArray()
-    private val footViews: SparseArray<Int> = SparseArray()
+    private lateinit var headLinearLayout: LinearLayout
+    private lateinit var footLinearLayout: LinearLayout
+    private lateinit var mEmptyLayout: FrameLayout
+    private val headViews: SparseArray<View> = SparseArray()
+    private val footViews: SparseArray<View> = SparseArray()
+    val params = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
+    private var mIsUseEmpty = true
+    private var mHeadAndEmptyEnable: Boolean = false
+    private var mFootAndEmptyEnable: Boolean = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when {
-            headViews.get(viewType) != null -> HeaderHolder(
-                LayoutInflater.from(context).inflate(
-                    headViews.get(viewType),
-                    parent,
-                    false
-                )
-            )
-            footViews.get(viewType) != null -> FooterHolder(
-                LayoutInflater.from(context).inflate(
-                    footViews.get(viewType),
-                    parent,
-                    false
-                )
-            )
+        return when (viewType) {
+            HEADER -> HeaderHolder(headLinearLayout)
+            FOOTER -> FooterHolder(footLinearLayout)
             else -> BodyHolder(LayoutInflater.from(context).inflate(itemView, parent, false))
         }
     }
@@ -81,21 +77,21 @@ abstract class BaseAdapter<T>(var datas: MutableList<T>, private val itemView: I
 
 
     override fun getItemViewType(position: Int): Int {
-        return when {
-            isHeaderViewPos(position) -> headViews.keyAt(position)
-            isFooterViewPos(position) -> footViews.keyAt(position - headViews.size() - datas.size)
-            else -> this.getItemViewType(position - headViews.size())
+        return when (position) {
+            0 -> HEADER
+            datas.size - 1 -> FOOTER
+            else -> BODY
         }
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (isHeaderViewPos(position)) {
+        if (position == 0) {
             return
         }
-        if (isFooterViewPos(position)) {
+        if (position == datas.size - 1) {
             return
         }
-        bindData(holder, position - headViews.size())
+        bindData(holder, holder.adapterPosition - 1)
     }
 
     private fun getRealItemCount(): Int {
@@ -110,17 +106,108 @@ abstract class BaseAdapter<T>(var datas: MutableList<T>, private val itemView: I
         return position >= headViews.size() + getRealItemCount()
     }
 
-    fun addHeader(view: Int) {
-        val i = headViews.indexOfValue(view)
-        if (DEFAULT_NUM == i) {
-            headViews.put(headViews.size(), view)
-        }
+    fun addHeader(view: View): Int {
+        return addHeader(view)
     }
 
-    fun addFooter(view: Int) {
-        val i = footViews.indexOfValue(view)
-        if (DEFAULT_NUM == i) {
-            footViews.put(footViews.size(), view)
+    fun addHeader(view: View, index: Int): Int {
+        return addHeader(view, index, LinearLayout.VERTICAL)
+    }
+
+    fun addHeader(view: View, index: Int, orientation: Int): Int {
+        var pos: Int = index
+            headLinearLayout = LinearLayout(view.context)
+            if (orientation == LinearLayout.VERTICAL) {
+                headLinearLayout.orientation = LinearLayout.VERTICAL
+                headLinearLayout.layoutParams = ViewGroup.LayoutParams(MATCH_PARENT, WRAP_CONTENT)
+            } else {
+                headLinearLayout.setOrientation(LinearLayout.HORIZONTAL)
+                headLinearLayout.setLayoutParams(ViewGroup.LayoutParams(WRAP_CONTENT, MATCH_PARENT))
+            }
+        val childCount = headLinearLayout.getChildCount()
+        if (index < 0 || index > childCount) {
+            pos = childCount
+        }
+        headLinearLayout.addView(view, index)
+        if (headLinearLayout.childCount == 1) {
+            val position = getHeaderViewPosition()
+            if (position != -1) {
+                notifyItemInserted(position)
+            }
+        }
+        return pos
+    }
+
+    private fun getHeaderViewPosition(): Int {
+        if (getEmptyViewCount() == 1) {
+            if (mHeadAndEmptyEnable) {
+                return 0
+            }
+        } else {
+            return 0
+        }
+        return -1
+    }
+
+    fun getEmptyViewCount(): Int {
+        if (mEmptyLayout == null || mEmptyLayout.childCount == 0) {
+            return 0
+        }
+        if (!mIsUseEmpty) {
+            return 0
+        }
+        return if (datas.size != 0) {
+            0
+        } else 1
+    }
+
+    fun getEmptyView(): View {
+        return mEmptyLayout
+    }
+
+    fun addFooter(view: View) {
+//        val i = footViews.indexOfValue(view)
+//        if (DEFAULT_NUM == i) {
+//            footViews.put(footViews.size(), view)
+//        }
+        footLinearLayout.setVerticalGravity(LinearLayout.VERTICAL)
+        footLinearLayout.layoutParams = params
+        footLinearLayout.addView(view)
+    }
+
+    private fun getHeaderLayoutCount(): Int {
+        return if (headLinearLayout == null || headLinearLayout.childCount == 0)
+            0 else 1
+    }
+
+    fun setEmptyView(emptyView: View) {
+        var insert = false
+        if (mEmptyLayout == null) {
+            mEmptyLayout = FrameLayout(emptyView.context)
+            val layoutParams =
+                RecyclerView.LayoutParams(
+                    RecyclerView.LayoutParams.MATCH_PARENT,
+                    RecyclerView.LayoutParams.MATCH_PARENT
+                )
+            val lp = emptyView.layoutParams
+            if (lp != null) {
+                layoutParams.width = lp.width
+                layoutParams.height = lp.height
+            }
+            mEmptyLayout.layoutParams = layoutParams
+            insert = true
+        }
+        mEmptyLayout.removeAllViews()
+        mEmptyLayout.addView(emptyView)
+        mIsUseEmpty = true
+        if (insert) {
+            if (getEmptyViewCount() == 1) {
+                var position = 0
+                if (mHeadAndEmptyEnable && getHeaderLayoutCount() != 0) {
+                    position++
+                }
+                notifyItemInserted(position)
+            }
         }
     }
 
