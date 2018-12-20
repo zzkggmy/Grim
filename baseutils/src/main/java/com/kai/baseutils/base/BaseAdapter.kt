@@ -32,11 +32,12 @@ abstract class BaseAdapter<T>(var datas: MutableList<T>, private val itemView: I
     private var mFootAndEmptyEnable: Boolean = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return when (viewType) {
-            HEADER -> HeaderHolder(headLinearLayout)
-            FOOTER -> FooterHolder(footLinearLayout)
-            else -> BodyHolder(LayoutInflater.from(context).inflate(itemView, parent, false))
-        }
+//        return when (viewType) {
+//            HEADER -> HeaderHolder(headLinearLayout)
+//            FOOTER -> FooterHolder(footLinearLayout)
+//            else ->
+        return BodyHolder(LayoutInflater.from(context).inflate(itemView, parent, false))
+//        }
     }
 
     override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
@@ -76,22 +77,22 @@ abstract class BaseAdapter<T>(var datas: MutableList<T>, private val itemView: I
     override fun getItemCount(): Int = datas.size + headViews.size() + footViews.size()
 
 
-    override fun getItemViewType(position: Int): Int {
-        return when (position) {
-            0 -> HEADER
-            datas.size - 1 -> FOOTER
-            else -> BODY
-        }
-    }
+//    override fun getItemViewType(position: Int): Int {
+//        return when (position) {
+//            0 -> HEADER
+//            datas.size - 1 -> FOOTER
+//            else -> BODY
+//        }
+//    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (position == 0) {
-            return
-        }
-        if (position == datas.size - 1) {
-            return
-        }
-        bindData(holder, holder.adapterPosition - 1)
+//        if (position == 0) {
+//            return
+//        }
+//        if (position == datas.size - 1) {
+//            return
+//        }
+        bindData(holder, holder.adapterPosition)
     }
 
     private fun getRealItemCount(): Int {

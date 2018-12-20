@@ -1,5 +1,6 @@
 package com.kai.baseutils.base
 
+import android.graphics.Color
 import android.os.Build
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
@@ -22,7 +23,7 @@ abstract class BaseActivity : AppCompatActivity() {
         init()
         setContentView(bindLayout())
         setLeftClick { finish() }
-        setCenterTitle("标题", R.color.text_black,null)
+        setCenterTitle("标题")
         initView()
         if (Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP_MR1)
             toolBar.fitsSystemWindows = true
@@ -49,9 +50,9 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun setContentView(layoutResID: Int) = if (useTitleBar()) {
         linearLayout.addView(
-            layoutInflater.inflate(layoutResID, linearLayout, false),
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
+                layoutInflater.inflate(layoutResID, linearLayout, false),
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
         )
         super.setContentView(linearLayout)
     } else {
@@ -98,10 +99,16 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun setLeftTitle(drawble: Int) = toolBar.setLeftIcon(drawble)
+    fun setLeftTitle(text: String) = toolBar.setLeftText(text, Color.BLACK, 15f)
+    fun setLeftTitle(text: String, textColor: Int) = toolBar.setLeftText(text, textColor, 15f)
+    fun setLeftTitle(text: String, textSize: Float) = toolBar.setLeftText(text, Color.BLACK, textSize)
+    fun setLeftTitle(text: String, textColor: Int, textSize: Float) = toolBar.setLeftText(text, textColor, textSize)
+
     fun setLeftFirstTitle(drawble: Int) = toolBar.setLeftFirstIcon(drawble)
-    fun setLeftTitle(text: String, textColor: Int?, textSize: Float?) = toolBar.setLeftText(text, textColor, textSize)
-    fun setLeftFirstTitle(text: String, textColor: Int, textSize: Float) =
-        toolBar.setLeftFirstTitle(text, textColor, textSize)
+    fun setLeftFirstTitle(text: String) = toolBar.setLeftFirstTitle(text, Color.BLACK, 15f)
+    fun setLeftFirstTitle(text: String, textColor: Int) = toolBar.setLeftFirstTitle(text, textColor, 15f)
+    fun setLeftFirstTitle(text: String, textSize: Float) = toolBar.setLeftFirstTitle(text, Color.BLACK, textSize)
+    fun setLeftFirstTitle(text: String, textColor: Int, textSize: Float) = toolBar.setLeftFirstTitle(text, textColor, textSize)
 
     fun setLeftClick(click: () -> Unit) = toolBar.setLeftClick { click() }
     fun setLeftFirstClick(click: () -> Unit) = toolBar.setLeftFirstClick { click() }
@@ -110,16 +117,22 @@ abstract class BaseActivity : AppCompatActivity() {
     fun setLeftClickable(clickable: Boolean) = toolBar.setLeftClickable(clickable)
     fun setLeftFirstClickable(clickable: Boolean) = toolBar.setLeftFirstClickable(clickable)
 
-    fun setCenterTitle(text: String, textColor: Int?, textSize: Float?) = toolBar.setTitle(text, textColor, textSize)
     fun setCenterTitle(drawble: Int) = toolBar.setTitleIcon(drawble)
+    fun setCenterTitle(text: String) = toolBar.setTitle(text, Color.BLACK, 15f)
+    fun setCenterTitle(text: String, textColor: Int) = toolBar.setTitle(text, textColor, 15f)
+    fun setCenterTitle(text: String, textSize: Float) = toolBar.setTitle(text, Color.BLACK, textSize)
+    fun setCenterTitle(text: String, textColor: Int, textSize: Float) = toolBar.setTitle(text, textColor, textSize)
     fun setTitleClick(click: () -> Unit) = toolBar.setTitleClick { click() }
     fun setCenterVisibility(visibility: Int) = toolBar.setCenterVisibility(visibility)
     fun setCenterClickable(clickable: Boolean) = toolBar.setCenterClickable(clickable)
 
-    fun setRightTitle(text: String, textColor: Int?, textSize: Float?) = toolBar.setRightText(text, textColor, textSize)
+    fun setRightTitle(text: String) = toolBar.setRightText(text, Color.BLACK, 15f)
+    fun setRightTitle(text: String, textColor: Int) = toolBar.setRightText(text, textColor, 15f)
+    fun setRightTitle(text: String, textSize: Float) = toolBar.setRightText(text, Color.BLACK, textSize)
+    fun setRightTitle(text: String, textColor: Int, textSize: Float) = toolBar.setRightText(text, textColor, textSize)
     fun setRightFirstTitle(drawble: Int) = toolBar.setRightFirstIcon(drawble)
     fun setRightFirstTitle(text: String, textColor: Int?, textSize: Float?) =
-        toolBar.setRightFirstTitle(text, textColor, textSize)
+            toolBar.setRightFirstTitle(text, textColor, textSize)
 
     fun setRihtTitle(drawble: Int) = toolBar.setRightIcon(drawble)
     fun setRightClick(click: () -> Unit) = toolBar.setRightClick { click() }
